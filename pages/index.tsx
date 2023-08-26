@@ -9,7 +9,7 @@ import {
   ListItemSecondaryAction,
 } from '@mui/material';
 
-import { getMovies } from './api/v1/movies';
+import { getMovies } from './api/v1/movieList';
 
 type Movie = {
   id: number;

@@ -1,5 +1,8 @@
 import { useState } from 'react';
 
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+
 import {
   Container,
   FormControl,
@@ -8,17 +11,24 @@ import {
   Select,
   SelectChangeEvent,
   Button,
+  TextField,
 } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import Link from 'next/link';
+import { useCreateMovie } from './hooks/useCreateMovie';
 
 // 영화 등록 페이지
 // TODO: 영화 등록 연결
 export default function AddMovie() {
+  const router = useRouter();
+  const [title, setTitle] = useState('');
   const [genre, setGenre] = useState('');
   const [releaseDate, setReleaseDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value);
+  };
 
   const handleGenreChange = (event: SelectChangeEvent<string>) => {
     setGenre(event.target.value as string);
@@ -32,10 +42,31 @@ export default function AddMovie() {
     setEndDate(date);
   };
 
+  const { mutate: createMovie } = useCreateMovie();
+
+  const submitMovie = async () => {
+    const movieData = {
+      title: '영화 제목',
+      genre,
+      releasedAt: releaseDate,
+      endAt: endDate,
+    };
+    createMovie({
+      movieData: movieData,
+    });
+  };
+
   return (
     <Container>
       <h1>영화 정보 입력</h1>
-
+      <TextField
+        fullWidth
+        variant='outlined'
+        margin='normal'
+        label='영화 제목'
+        value={title}
+        onChange={handleTitleChange}
+      />
       <FormControl fullWidth variant='outlined' margin='normal'>
         <InputLabel>장르 선택</InputLabel>
         <Select value={genre} onChange={handleGenreChange} label='장르 선택'>
@@ -59,6 +90,14 @@ export default function AddMovie() {
           onChange={handleEndDateChange}
         />
       </LocalizationProvider>
+      <Button
+        variant='contained'
+        color='primary'
+        type='submit'
+        onClick={submitMovie}
+      >
+        영화 등록
+      </Button>
       <Button variant='contained' color='primary'>
         <Link href='/'>목록으로 돌아가기</Link>
       </Button>
