@@ -30,8 +30,9 @@ export default async function handler(
         },
         body: JSON.stringify(req.body),
       });
+
       const putData = await putRes.json();
-      res.status(putRes.status).json(putData);
+      res.status(200).json(putData);
       break;
 
     case 'DELETE':
@@ -39,7 +40,7 @@ export default async function handler(
       const delRes = await fetchWithBaseURL(apiUrl, {
         method: 'DELETE',
       });
-      if (delRes.status === 200) {
+      if (delRes.status === 204) {
         res.status(200).json({ message: 'Deleted successfully' });
       } else {
         res.status(delRes.status).json({ message: 'An error occurred' });

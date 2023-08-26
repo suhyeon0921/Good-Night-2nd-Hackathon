@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+
 import {
   Container,
   Typography,
@@ -37,7 +38,6 @@ export default function MovieDetail() {
       fetch(`/api/v1/movies/${id}`)
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
           setMovie(data);
         })
         .catch((error) => {

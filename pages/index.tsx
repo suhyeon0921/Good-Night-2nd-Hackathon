@@ -18,8 +18,21 @@ type Movie = {
 };
 
 export default function Home({ movies }: { movies: Movie[] }) {
-  const removeMovie = (id: number) => {
-    // TODO: 실제 API를 호출하여 영화 삭제
+  const removeMovie = async (id: number) => {
+    try {
+      const response = await fetch(`/api/v1/movies/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.status === 200) {
+        window.location.reload();
+      } else {
+        const data = await response.json();
+        console.error('An error occurred:', data.message);
+      }
+    } catch (error) {
+      console.error('An error occurred while deleting the movie:', error);
+    }
   };
 
   return (
@@ -49,7 +62,6 @@ export default function Home({ movies }: { movies: Movie[] }) {
   );
 }
 
-// 이 부분이 SSR을 위한 부분입니다.
 export const getServerSideProps = async () => {
   const movies = await getMovies();
   return { props: { movies } };

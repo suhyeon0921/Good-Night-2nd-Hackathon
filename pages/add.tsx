@@ -1,7 +1,5 @@
 import { useState } from 'react';
-
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 
 import {
   Container,
@@ -15,12 +13,11 @@ import {
 } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+
 import { useCreateMovie } from './hooks/useCreateMovie';
 
 // 영화 등록 페이지
-// TODO: 영화 등록 연결
 export default function AddMovie() {
-  const router = useRouter();
   const [title, setTitle] = useState('');
   const [genre, setGenre] = useState('');
   const [releaseDate, setReleaseDate] = useState(null);
@@ -46,7 +43,7 @@ export default function AddMovie() {
 
   const submitMovie = async () => {
     const movieData = {
-      title: '영화 제목',
+      title,
       genre,
       releasedAt: releaseDate,
       endAt: endDate,
@@ -96,10 +93,7 @@ export default function AddMovie() {
         type='submit'
         onClick={submitMovie}
       >
-        영화 등록
-      </Button>
-      <Button variant='contained' color='primary'>
-        <Link href='/'>목록으로 돌아가기</Link>
+        <Link href='/'>영화 등록</Link>
       </Button>
     </Container>
   );
