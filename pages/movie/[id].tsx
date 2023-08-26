@@ -22,16 +22,28 @@ export default function MovieDetail() {
   const router = useRouter();
   const { id } = router.query;
 
-  const [movie, setMovie] = useState<{ title?: string; genre?: string } | null>(
-    null
-  );
+  const [movie, setMovie] = useState<{
+    title: string;
+    genre: string;
+    releasedAt: string;
+    endAt: string;
+  } | null>(null);
   const [newReview, setNewReview] = useState<string>('');
   const [newRating, setNewRating] = useState<number | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
 
-  // FIXME: 실제 api로 연동
   useEffect(() => {
-    setMovie({ title: 'Inception', genre: '액션' });
+    if (id) {
+      fetch(`/api/v1/movies/${id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setMovie(data);
+        })
+        .catch((error) => {
+          console.error('An error occurred while fetching the data: ', error);
+        });
+    }
   }, [id]);
 
   // 존재하지 않는 영화에 대한 예외 처리
@@ -52,11 +64,25 @@ export default function MovieDetail() {
     }
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+      2,
+      '0'
+    )}-${String(date.getDate()).padStart(2, '0')}`;
+  };
+
   return (
     <Container>
       <Box my={4}>
         <Typography variant='h4'>영화 상세 정보: {movie.title}</Typography>
         <Typography variant='subtitle1'>장르: {movie.genre}</Typography>
+        <Typography variant='subtitle1'>
+          개봉일: {formatDate(movie.releasedAt)}
+        </Typography>
+        <Typography variant='subtitle1'>
+          상영종료일: {formatDate(movie.endAt)}
+        </Typography>
       </Box>
 
       <Box my={4}>
