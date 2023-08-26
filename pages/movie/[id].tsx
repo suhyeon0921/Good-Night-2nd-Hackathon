@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { Key, useEffect, useState } from 'react';
 
 import {
   Container,
@@ -13,13 +13,16 @@ import {
   Rating,
 } from '@mui/material';
 
+import { useReview } from '../hooks/useReview';
+import { getReviews } from '../api/v1/reviewList';
+
 type Review = {
   text: string;
   rating: number;
 };
 
 // 영화 상세 정보
-export default function MovieDetail() {
+export default function MovieDetail({ reviewsData }: any) {
   const router = useRouter();
   const { id } = router.query;
 
@@ -29,9 +32,23 @@ export default function MovieDetail() {
     releasedAt: string;
     endAt: string;
   } | null>(null);
-  const [newReview, setNewReview] = useState<string>('');
-  const [newRating, setNewRating] = useState<number | null>(null);
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [comment, setComment] = useState<string>('');
+  const [score, setScore] = useState<number | null>(null);
+
+  const { mutate: createReview } = useReview();
+
+  const addReview = async () => {
+    const reviewData = {
+      movieId: Number(id),
+      score: score,
+      comment: comment,
+    };
+
+    createReview({
+      reviewData: reviewData,
+    });
+    window.location.reload();
+  };
 
   useEffect(() => {
     if (id) {
@@ -54,15 +71,6 @@ export default function MovieDetail() {
       </Container>
     );
   }
-
-  // Add a new review
-  const addReview = () => {
-    if (newReview && newRating !== null) {
-      setReviews([...reviews, { text: newReview, rating: newRating }]);
-      setNewReview('');
-      setNewRating(null);
-    }
-  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -88,19 +96,24 @@ export default function MovieDetail() {
       <Box my={4}>
         <Typography variant='h6'>리뷰 등록</Typography>
         <TextField
-          value={newReview}
-          onChange={(e) => setNewReview(e.target.value)}
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
           label='리뷰'
           variant='outlined'
           fullWidth
           margin='normal'
         />
         <Rating
-          value={newRating}
-          onChange={(e, newValue) => setNewRating(newValue)}
+          value={score}
+          onChange={(e, newValue) => setScore(newValue)}
           precision={0.5}
         />
-        <Button variant='contained' color='primary' onClick={addReview}>
+        <Button
+          variant='contained'
+          color='primary'
+          type='submit'
+          onClick={addReview}
+        >
           리뷰 추가
         </Button>
       </Box>
@@ -108,14 +121,41 @@ export default function MovieDetail() {
       <Box my={4}>
         <Typography variant='h6'>리뷰 목록</Typography>
         <List>
-          {reviews.map((review, index) => (
-            <ListItem key={index}>
-              <ListItemText primary={review.text} />
-              <Rating value={review.rating} readOnly />
-            </ListItem>
-          ))}
+          {reviewsData.map(
+            (
+              review: {
+                comment: string;
+                score: number;
+              },
+              index: Key | null | undefined
+            ) => (
+              <ListItem key={index}>
+                <ListItemText primary={review.comment} />
+                <Rating value={review.score} readOnly />
+              </ListItem>
+            )
+          )}
         </List>
       </Box>
     </Container>
   );
+}
+
+export async function getServerSideProps(context: { query: { id: number } }) {
+  const id = context.query.id; // URL에서 id 파라미터 가져오기
+
+  let reviewsData = null;
+
+  // 리뷰 정보 가져오기
+  try {
+    reviewsData = await getReviews({ id });
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+  }
+
+  return {
+    props: {
+      reviewsData: reviewsData,
+    },
+  };
 }

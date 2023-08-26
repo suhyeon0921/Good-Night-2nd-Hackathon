@@ -1,27 +1,21 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { useRouter } from 'next/router';
-
-export const fetchMovie = async ({ movieData }: any) => {
+export const fetchReview = async ({ reviewData }: any) => {
   try {
-    const response = await fetch('/api/v1/movies', {
+    const response = await fetch('/api/v1/reviews', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        title: movieData.title,
-        genre: movieData.genre,
-        releasedAt: movieData.releasedAt,
-        endAt: movieData.endAt,
-      }),
+      body: JSON.stringify(reviewData),
       credentials: 'include',
     });
 
     if (response.status >= 200 && response.status < 300) {
       return true;
     } else {
-      return false;
+      const data = await response.json();
+      console.log('Server Error:', data);
     }
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -34,14 +28,11 @@ export const fetchMovie = async ({ movieData }: any) => {
   }
 };
 
-export const useCreateMovie = (successAction?: () => void) => {
-  const router = useRouter(); // useRouter 사용
-
-  return useMutation(fetchMovie, {
+export const useReview = (successAction?: () => void) => {
+  return useMutation(fetchReview, {
     onSuccess: (data) => {
       if (data) {
         alert('Movie created successfully!');
-        router.push('/');
       } else {
         alert('Failed to save movie');
       }

@@ -14,7 +14,7 @@ import {
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
-import { useCreateMovie } from './hooks/useCreateMovie';
+import { useMovie } from './hooks/useMovie';
 
 // 영화 등록 페이지
 export default function AddMovie() {
@@ -39,7 +39,7 @@ export default function AddMovie() {
     setEndDate(date);
   };
 
-  const { mutate: createMovie } = useCreateMovie();
+  const { mutate: createMovie } = useMovie();
 
   const submitMovie = async () => {
     const movieData = {
