@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import Link from 'next/link';
+
 import {
   Button,
   Container,
@@ -9,21 +9,17 @@ import {
   ListItemSecondaryAction,
 } from '@mui/material';
 
+import { getMovies } from './api/v1/movies';
+
 type Movie = {
   id: number;
   title: string;
   genre: string;
 };
 
-// 영화 목록
-export default function Home() {
-  const [movies, setMovies] = useState<Movie[]>([
-    { id: 1, title: 'Inception', genre: 'Sci-fi' },
-    { id: 2, title: 'Avengers', genre: 'Action' },
-  ]);
-
+export default function Home({ movies }: { movies: Movie[] }) {
   const removeMovie = (id: number) => {
-    setMovies(movies.filter((movie) => movie.id !== id));
+    // TODO: 실제 API를 호출하여 영화 삭제
   };
 
   return (
@@ -52,3 +48,9 @@ export default function Home() {
     </Container>
   );
 }
+
+// 이 부분이 SSR을 위한 부분입니다.
+export const getServerSideProps = async () => {
+  const movies = await getMovies();
+  return { props: { movies } };
+};
