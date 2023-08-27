@@ -11,6 +11,7 @@ https://github.com/techeer-sv/Good-Night-2nd-Hackathon-Frontend
 - Next.js 버전 12
 - API router, SSR 일부 적용
 
+
 ## 사용한 API
 
 https://github.com/0BVer/movieReview
@@ -19,6 +20,11 @@ https://github.com/0BVer/movieReview
 
 ```
 NEXT_PUBLIC_BASE_URL='http://localhost:8080'
+```
+
+## 실행
+```
+yarn dev
 ```
 
 ## 페이지
